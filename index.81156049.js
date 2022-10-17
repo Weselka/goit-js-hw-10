@@ -1,0 +1,2 @@
+var e={fetchName:function(e){return fetch(`https://restcountries.com/v3.1/name/${e}`).then((e=>e.json()))}};function t(e){}function n(e){alert("Oops, there is no country with that name")}({cardContainer:document.querySelector(".country-info"),searchBox:document.querySelector("#search-box")}).searchBox.addEventListener("input",(function(c){c.preventDefault();const o=c.currentTarget.value;console.log(o),e.fetchName(o).then(t).catch(n).finally((()=>o.reset()))}));
+//# sourceMappingURL=index.81156049.js.map
