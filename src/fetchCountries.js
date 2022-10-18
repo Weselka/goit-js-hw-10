@@ -1,8 +1,11 @@
 const BASE_URL = 'https://restcountries.com/v3.1'
 
-function fetchName(pokemonId) {
-  const url = `${BASE_URL}/name/${pokemonId}`;
-  return fetch(url).then(response => response.json());
+export function fetchCountries(name) {
+  const url = `${BASE_URL}/name/${name}?name.official&capital&population&flags.svg&languages`;
+  return fetch(url).then(response => {
+    if (!response.ok) {
+      throw new Error()
+    };
+    return response.json()
+  });
 }
-
-export default { fetchName };

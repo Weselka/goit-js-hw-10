@@ -51,16 +51,25 @@
 // }
 
 import './css/styles.css';
-import API from './fetchCountries';
+import { fetchCountries } from './fetchCountries';
 
 const DEBOUNCE_DELAY = 300;
 
 const refs = {
-  cardContainer: document.querySelector('.country-info'),
+  countryList: document.querySelector('.country-list'),
+  container: document.querySelector('.country-info'),
   searchBox: document.querySelector('#search-box'),
 };
 
 refs.searchBox.addEventListener('input', onInput);
+
+// textInput.addEventListener('focus', () => {
+//   textInput.value = 'This input has focus';
+// });
+
+// textInput.addEventListener('blur', () => {
+//   textInput.value = '';
+// });document.activeElement.
 
 function onInput(event) {
   event.preventDefault();
@@ -68,15 +77,38 @@ function onInput(event) {
   const inputSearch = event.currentTarget.value;
   console.log(inputSearch);
 
-  API.fetchName(inputSearch)
-    .then(renderPocemonCard)
-    .catch(onFetchError)
-    .finally(() => inputSearch.reset());
+  fetchCountries(inputSearch).then(renderCountryList).catch(onFetchError);
+  //.finally(() => inputSearch.reset());
 }
 
-function renderPocemonCard(name) {
-//   const markup = pocemonCardTpl(name);
-//   refs.cardContainer.innerHTML = markup;
+function renderCountryList(country) {
+  // return arr
+  //   .map(
+  //     country =>
+  //       `<li>
+  //     <h2>Country:${name.official}</h2>
+  //     <p>Capital: ${capital}</p>
+  //     <p>Population: ${population}</p>
+  //     <img src="${flags.svg}" alt="flags">
+  //     <p>Languages: ${languages}</p></li>`
+  //   )
+  //   .join('');
+  const markup = countryCardTpl(country);
+  refs.countryList.innerHTML = markup;
+}
+
+function countryCardTpl(arr) {
+  return arr
+    .map(
+      country =>
+        `<li>
+      <h2>Country:${name.official}</h2>
+      <p>Capital: ${capital}</p>
+      <p>Population: ${population}</p>
+      <img src="${flags.svg}" alt="flags">
+      <p>Languages: ${languages}</p></li>`
+    )
+    .join('');
 }
 
 function onFetchError(error) {
