@@ -52,7 +52,7 @@
 
 import './css/styles.css';
 import { fetchCountries } from './fetchCountries';
-
+const debounce = require('lodash.debounce');
 const DEBOUNCE_DELAY = 300;
 
 const refs = {
@@ -112,5 +112,5 @@ function countryCardTpl(arr) {
 }
 
 function onFetchError(error) {
-  alert('Oops, there is no country with that name');
+  // alert('Oops, there is no country with that name');
 }
