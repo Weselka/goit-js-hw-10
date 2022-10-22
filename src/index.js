@@ -1,58 +1,7 @@
-// fetch('https://pokeapi.co/api/v2/pokemon/2')
-//   .then(response => {
-//     console.log(response.json);
-//     return response.json();
-//   })
-//   .then(pokemon => {
-//     console.log(pokemon);
-//   })
-//   .catch(error => {
-//     console.log(error);
-//   });
-
-////////////////////////////////////////////////////////////////////
-
-// const refs = {
-//   cardContainer: document.querySelector('.country-info'),
-//   searchBox: document.querySelector('#search-box'),
-// };
-
-// // refs.form.addEventListener('input', throttle(onFormInput, 500));
-// refs.searchBox.addEventListener('input', onInput);
-
-// function onInput(event) {
-//   event.preventDefault();
-
-//   const inputSearch = event.target.value;
-//   console.log(inputSearch);
-
-//   fetchPocemon(inputSearch)
-//     .then(renderPocemonCard)
-//     .catch(onFetchError)
-//     .finally(() => inputSearch.reset());
-
-//   //   const formJSON = JSON.stringify(formData);
-
-//   //   localStorage.setItem(STORAGE_KEY, formJSON);
-// }
-
-// function fetchPocemon(pokemonId) {
-//   const url = `https://pokeapi.co/api/v2/pokemon/${pokemonId}`;
-//   return fetch(url).then(response => response.json());
-// }
-
-// function renderPocemonCard(pokemon) {
-//   const markup = pocemonCardTpl(pokemon);
-//   refs.cardContainer.innerHTML = markup;
-// }
-
-// function onFetchError(error) {
-//   alert('Oops, there is no country with that name');
-// }
-
 import './css/styles.css';
 import { fetchCountries } from './fetchCountries';
-const debounce = require('lodash.debounce');
+import debounce from 'lodash.debounce';
+// const debounce = require('lodash.debounce');
 const DEBOUNCE_DELAY = 300;
 
 const refs = {
@@ -61,56 +10,62 @@ const refs = {
   searchBox: document.querySelector('#search-box'),
 };
 
-refs.searchBox.addEventListener('input', onInput);
+refs.searchBox.addEventListener(
+  'input',
+  debounce(onInputSearch, DEBOUNCE_DELAY)
+);
 
-// textInput.addEventListener('focus', () => {
-//   textInput.value = 'This input has focus';
-// });
-
-// textInput.addEventListener('blur', () => {
-//   textInput.value = '';
-// });document.activeElement.
-
-function onInput(event) {
+function onInputSearch(event) {
   event.preventDefault();
 
-  const inputSearch = event.currentTarget.value;
+  const inputSearch = event.target.value.trim().toLowerCase();
   console.log(inputSearch);
 
-  fetchCountries(inputSearch).then(renderCountryList).catch(onFetchError);
+  if (inputSearch.length === 0) {
+    return alert('Enter country');
+  }
+  
+  fetchCountries(inputSearch).then(country => {
+    clearMarkup()
+    if (country.length === 1) {
+      renderCountryItem(country);
+    } else if (country.length >= 2 && country.length <= 10) {
+      renderCountryList(country);
+    } else {
+      alert('Too many countries')
+    }
+  }).catch(onFetchError);
   //.finally(() => inputSearch.reset());
 }
 
+function clearMarkup () {
+  refs.container.innerHTML = '';
+  refs.countryList.innerHTML = '';
+}
+
+function renderCountryItem([{ name, capital, population, flags, languages }]) {
+  const markupCard = `<div>
+  <img src="${flags.svg}" alt="flags" width=100>
+      <h2>Country: ${name.official}</h2>
+      <p>Capital: ${capital}</p>
+      <p>Population: ${population}</p>      
+      <p>Languages: ${Object.values(languages).join(', ')}</p></div>`;
+  refs.container.innerHTML = markupCard;
+}
+
 function renderCountryList(country) {
-  // return arr
-  //   .map(
-  //     country =>
-  //       `<li>
-  //     <h2>Country:${name.official}</h2>
-  //     <p>Capital: ${capital}</p>
-  //     <p>Population: ${population}</p>
-  //     <img src="${flags.svg}" alt="flags">
-  //     <p>Languages: ${languages}</p></li>`
-  //   )
-  //   .join('');
-  const markup = countryCardTpl(country);
+  console.log(country);
+  const markup = country
+    .map(
+      ({ name, flags }) =>
+        `<li>
+      <h2>Country:${name.common}</h2>
+      <img src="${flags.svg}" alt="flags" width=30>`
+    )
+    .join('');
   refs.countryList.innerHTML = markup;
 }
 
-function countryCardTpl(arr) {
-  return arr
-    .map(
-      country =>
-        `<li>
-      <h2>Country:${name.official}</h2>
-      <p>Capital: ${capital}</p>
-      <p>Population: ${population}</p>
-      <img src="${flags.svg}" alt="flags">
-      <p>Languages: ${languages}</p></li>`
-    )
-    .join('');
-}
-
 function onFetchError(error) {
-  // alert('Oops, there is no country with that name');
+  alert('Oops, there is no country with that name');
 }
